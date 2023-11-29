@@ -31,7 +31,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <stdbool.h>
+#include "my_conversions.h"
+#include "my_rtc.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,25 +56,27 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void send_debug_logs ( char* ) ;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #define T_NRST_Pin GPIO_PIN_2
 #define T_NRST_GPIO_Port GPIOF
-#define T_VCP_TX_Pin GPIO_PIN_2
-#define T_VCP_TX_GPIO_Port GPIOA
-#define T_VCP_RX_Pin GPIO_PIN_3
-#define T_VCP_RX_GPIO_Port GPIOA
-#define LD3_Pin GPIO_PIN_6
-#define LD3_GPIO_Port GPIOC
+#define DBG_TX_Pin GPIO_PIN_2
+#define DBG_TX_GPIO_Port GPIOA
+#define DBG_RX_Pin GPIO_PIN_3
+#define DBG_RX_GPIO_Port GPIOA
+#define LDG_Pin GPIO_PIN_6
+#define LDG_GPIO_Port GPIOC
 #define T_JTMS_Pin GPIO_PIN_13
 #define T_JTMS_GPIO_Port GPIOA
 #define T_JTCK_Pin GPIO_PIN_14
 #define T_JTCK_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+#define UART_TX_MAX_BUFF_SIZE	250
+#define UART_TIMEOUT			1000
+#define HUART_DBG				&huart2
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
