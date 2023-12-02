@@ -47,6 +47,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 char* 		hello = "\nHello Tuto_RTC_G031k8_001\n\n" ;
 char		rtc_dt_s[20] ;
+RTC_AlarmTypeDef	b ;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,28 +96,30 @@ int main(void)
   MX_USART2_UART_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-
   // System hello
   HAL_UART_Transmit ( HUART_DBG , (uint8_t*) hello , strlen (hello) , UART_TIMEOUT ) ;
-
-  // Test to prove that RTC is working
+  /*
+  RTC_AlarmTypeDef	a ;
+  a.AlarmTime.Hours = 0x00 ;
+  a.AlarmTime.Minutes = 0x00 ;
+  a.AlarmTime.Seconds = 0x0A ;
+  a.AlarmTime.SubSeconds = 0 ;
+  a.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE ;
+  a.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET ;
+  a.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY ;
+  a.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL ;
+  a.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE ;
+  a.Alarm = RTC_ALARM_A ;
+  HAL_RTC_SetAlarm ( &hrtc , &a , RTC_FORMAT_BIN ) ;
+  */
+  HAL_SuspendTick () ;
+  HAL_PWR_EnterSTOPMode ( PWR_MAINREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
+  HAL_ResumeTick () ;
   my_rtc_get_dt_s ( rtc_dt_s ) ;
   send_debug_logs ( rtc_dt_s ) ;
-  HAL_Delay ( 2000 ) ;
-
-  if ( /*my_rtc_set_alarm ( 20 )*/ RTC_AlarmConfig () )
-  {
-	  //RTC_AlarmConfig () ;
-	  my_rtc_get_dt_s ( rtc_dt_s ) ;
-	  send_debug_logs ( rtc_dt_s ) ;
-  	  HAL_SuspendTick () ;
-  	  HAL_PWR_EnterSTOPMode ( PWR_MAINREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
-  	  //HAL_PWR_EnterSTOPMode ( PWR_LOWPOWERREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
-  	  //HAL_PWR_EnterSTANDBYMode () ;
-  	  HAL_ResumeTick () ;
-  	  my_rtc_get_dt_s ( rtc_dt_s ) ;
-  	  send_debug_logs ( rtc_dt_s ) ;
-  }
+  send_debug_logs ( "Dupa" ) ;
+  my_rtc_get_dt_s ( rtc_dt_s ) ;
+  send_debug_logs ( rtc_dt_s ) ;
 
   /* USER CODE END 2 */
 
@@ -238,7 +241,7 @@ static void MX_RTC_Init(void)
   */
   sAlarm.AlarmTime.Hours = 0x0;
   sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x0;
+  sAlarm.AlarmTime.Seconds = 0x10;
   sAlarm.AlarmTime.SubSeconds = 0x0;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -247,7 +250,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
   sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }
@@ -343,41 +346,7 @@ void send_debug_logs ( char* p_tx_buffer )
     HAL_UART_Transmit ( HUART_DBG , ( uint8_t* ) p_tx_buffer , length , 1000 ) ;
     HAL_UART_Transmit ( HUART_DBG , ( uint8_t* ) "\n" , 1 , 1000 ) ;
 }
-bool RTC_AlarmConfig(void)
-{
-	RTC_AlarmTypeDef	a ;
-	a.AlarmTime.Hours = 0x00 ;
-	a.AlarmTime.Minutes = 0x01 ;
-	a.AlarmTime.Seconds = 0x00 ;
-	a.AlarmTime.SubSeconds = 0 ;
-	a.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE ;
-	a.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET ;
-	a.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY ;
-	a.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL ;
-	a.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE ;
-	a.Alarm = RTC_ALARM_A ;
 
-	if ( HAL_RTC_SetAlarm ( &hrtc , &a , RTC_FORMAT_BIN ) == HAL_OK )
-		return true ;
-	return false ;
-	/*
-	RTC_AlarmTypeDef sAlarm;
-	RTC_AlarmTypeDef sAlarm2;
-	sAlarm.AlarmTime.
-	sAlarm.AlarmTime.Hours = 0x00; // Ustawienie godziny alarmu (format 24h)
-	sAlarm.AlarmTime.Minutes = 0x01; // Ustawienie minut alarmu
-	sAlarm.AlarmTime.Seconds = 0x00; // Ustawienie sekund alarmu
-	sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_NONE;
-	sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-	sAlarm.AlarmDateWeekDay = 0x1; // Ustawienie dnia miesiąca alarmu
-	sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
-	sAlarm.Alarm = RTC_ALARM_A;
-	//HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD);
-	//HAL_RTC_GetAlarm ( &hrtc , sAlarm2, RTC_ALARM_A , RTC_FORMAT_BCD ) ;
-	HAL_RTC_SetAlarm ( &hrtc , &sAlarm , RTC_FORMAT_BCD ) ;
-	HAL_RTC_GetAlarm ( &hrtc , &sAlarm2, RTC_ALARM_A , RTC_FORMAT_BCD ) ;
-	*/
-}
 void HAL_RTC_AlarmAEventCallback ( RTC_HandleTypeDef *hrtc )
 {
 	send_debug_logs ( "HAL_RTC_AlarmAEventCallback\n" ) ;
