@@ -98,29 +98,21 @@ int main(void)
   /* USER CODE BEGIN 2 */
   // System hello
   HAL_UART_Transmit ( HUART_DBG , (uint8_t*) hello , strlen (hello) , UART_TIMEOUT ) ;
-  /*
-  RTC_AlarmTypeDef	a ;
-  a.AlarmTime.Hours = 0x00 ;
-  a.AlarmTime.Minutes = 0x00 ;
-  a.AlarmTime.Seconds = 0x0A ;
-  a.AlarmTime.SubSeconds = 0 ;
-  a.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE ;
-  a.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET ;
-  a.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY ;
-  a.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL ;
-  a.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE ;
-  a.Alarm = RTC_ALARM_A ;
-  HAL_RTC_SetAlarm ( &hrtc , &a , RTC_FORMAT_BIN ) ;
-  */
+
   HAL_Delay ( 1010 ) ; // just to be sure that RC is ticking
+
   my_rtc_get_dt_s ( rtc_dt_s ) ;
   send_debug_logs ( rtc_dt_s ) ;
+
   HAL_SuspendTick () ;
   HAL_PWR_EnterSTOPMode ( PWR_MAINREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
   HAL_ResumeTick () ;
+
   my_rtc_get_dt_s ( rtc_dt_s ) ;
   send_debug_logs ( rtc_dt_s ) ;
+
   send_debug_logs ( "Dupa" ) ;
+
   my_rtc_get_dt_s ( rtc_dt_s ) ;
   send_debug_logs ( rtc_dt_s ) ;
 
@@ -259,7 +251,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 1;
   sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }
