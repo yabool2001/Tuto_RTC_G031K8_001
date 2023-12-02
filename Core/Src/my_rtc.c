@@ -37,28 +37,29 @@ bool my_rtc_set_alarm ( uint32_t s )
 	RTC_TimeTypeDef 	t ;
 	RTC_AlarmTypeDef	a ;
 
-	bool r = false ;
-
 	my_rtc_get_dt ( &d , &t ) ;
 	uint32_t alarm_ts = my_conv_rtc2timestamp ( &d , &t ) + s ;
 	my_conv_timestamp2rtc ( alarm_ts , &d , &t ) ;
+
+	/** Enable the Alarm A
+	  */
 	a.AlarmTime.Hours = t.Hours ;
 	a.AlarmTime.Minutes = t.Minutes ;
 	a.AlarmTime.Seconds = t.Seconds ;
-	a.AlarmTime.SubSeconds = 0 ;
+	a.AlarmTime.SubSeconds = 0;
 	a.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE ;
 	a.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET ;
-	a.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY ;
+	a.AlarmMask = RTC_ALARMMASK_NONE ;
 	a.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL ;
 	a.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE ;
+	a.AlarmDateWeekDay = d.Date ;
 	a.Alarm = RTC_ALARM_A ;
-
-	if ( HAL_RTC_SetAlarm ( &hrtc , &a , RTC_FORMAT_BIN ) == HAL_OK )
+	if ( HAL_RTC_SetAlarm_IT ( &hrtc , &a , RTC_FORMAT_BIN ) == HAL_OK )
 	{
 		char s[60] = {0} ;
 		sprintf ( s , "Alarm set to %lu" , alarm_ts ) ;
 		send_debug_logs ( s ) ;
-		r = true ;
+		return true ;
 	}
-	return r ;
+	return false ;
 }

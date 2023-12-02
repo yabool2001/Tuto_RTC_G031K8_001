@@ -104,17 +104,20 @@ int main(void)
   my_rtc_get_dt_s ( rtc_dt_s ) ;
   send_debug_logs ( rtc_dt_s ) ;
 
-  HAL_SuspendTick () ;
-  HAL_PWR_EnterSTOPMode ( PWR_MAINREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
-  HAL_ResumeTick () ;
+  if ( my_rtc_set_alarm ( 30 ) )
+  {
+	  HAL_SuspendTick () ;
+	  HAL_PWR_EnterSTOPMode ( PWR_MAINREGULATOR_ON , PWR_STOPENTRY_WFE ) ;
+	  HAL_ResumeTick () ;
 
-  my_rtc_get_dt_s ( rtc_dt_s ) ;
-  send_debug_logs ( rtc_dt_s ) ;
+	  my_rtc_get_dt_s ( rtc_dt_s ) ;
+	  send_debug_logs ( rtc_dt_s ) ;
 
-  send_debug_logs ( "Dupa" ) ;
+	  send_debug_logs ( "Dupa" ) ;
 
-  my_rtc_get_dt_s ( rtc_dt_s ) ;
-  send_debug_logs ( rtc_dt_s ) ;
+	  my_rtc_get_dt_s ( rtc_dt_s ) ;
+	  send_debug_logs ( rtc_dt_s ) ;
+  }
 
   /* USER CODE END 2 */
 
@@ -241,12 +244,11 @@ static void MX_RTC_Init(void)
   */
   sAlarm.AlarmTime.Hours = 0;
   sAlarm.AlarmTime.Minutes = 0;
-  sAlarm.AlarmTime.Seconds = 9;
+  sAlarm.AlarmTime.Seconds = 10;
   sAlarm.AlarmTime.SubSeconds = 0;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
-                              |RTC_ALARMMASK_MINUTES;
+  sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 1;
